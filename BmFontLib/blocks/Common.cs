@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+// ReSharper disable InconsistentNaming
 
-namespace BmFontLib
+namespace BmFontLib.blocks
 {
     public struct Common
     {

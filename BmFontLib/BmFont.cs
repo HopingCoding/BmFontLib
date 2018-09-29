@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
+using BmFontLib.blocks;
+using Char = BmFontLib.blocks.Char;
+// ReSharper disable InconsistentNaming
 
 namespace BmFontLib
 {
@@ -16,7 +18,7 @@ namespace BmFontLib
         
         public Info info;
         public Common common;
-        public List<Page> pages = new List<Page>();
+        public IList<string> pages = new List<string>();
         public IDictionary<uint, Char> characters = new Dictionary<uint, Char>();
 
 
@@ -27,7 +29,7 @@ namespace BmFontLib
             stream.Read(fourbyte, 0, fourbyte.Length); //BMF3
             if (fourbyte[0] != 66 || fourbyte[1] != 77 || fourbyte[2] != 70 || fourbyte[3] != 3)
             {
-                Console.WriteLine("[BMFont] FourCC incorrect: " + fourbyte);
+                Console.WriteLine($"[BmFont] FourCC incorrect: {fourbyte}");
             }
 
             int blockId;
@@ -63,7 +65,7 @@ namespace BmFontLib
                                     name += (char)data[i];
                                     i++;
                                 }
-                                pages.Add(new Page {file = name});
+                                pages.Add( name);
                                 i++;
                             }
                         }
@@ -87,10 +89,8 @@ namespace BmFontLib
                                 uint first = BitConverter.ToUInt32(data, offset);
                                 uint second = BitConverter.ToUInt32(data, offset + 4);
                                 short amount = BitConverter.ToInt16(data, offset + 8);
-                                if (!characters[first].kernings.ContainsKey(second))
-                                {
-                                    characters[first].kernings.Add(second, amount);
-                                }
+
+                                characters[first].kernings.Add(second, amount);
                             }
                         }
                         break;
@@ -98,18 +98,27 @@ namespace BmFontLib
             }
         }
 
-        // TODO: add kerning?
-        public int GetTextWidth(string text)
+        public int GetTextWidth(string text, bool includeKernings = true)
         {
-            int w = 0;
+            int width = 0;
+            Char? prev = null;
             foreach (char c in text)
             {
                 if (characters.TryGetValue(c, out var glyph))
                 {
-                    w += glyph.xadvance;
+                    width += glyph.xadvance;
+                    if (includeKernings && prev != null)
+                    {
+                        if (prev.Value.kernings.TryGetValue(c, out var kerning))
+                        {
+                            width += kerning;
+                        }
+                    }
+
+                    prev = glyph;
                 }
             }
-            return w;
+            return width;
         }
     }
 }

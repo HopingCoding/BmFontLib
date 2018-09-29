@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+// ReSharper disable InconsistentNaming
 
-namespace BmFontLib
+namespace BmFontLib.blocks
 {
     public struct Info
     {
@@ -43,7 +42,7 @@ namespace BmFontLib
         private static string GetString(byte[] bytes, int offset)
         {
             byte[] chars = new byte[bytes.Length - offset - 1];
-            System.Buffer.BlockCopy(bytes, offset, chars, 0, bytes.Length - offset - 1);
+            Buffer.BlockCopy(bytes, offset, chars, 0, bytes.Length - offset - 1);
             return System.Text.Encoding.Default.GetString(chars);
         }
 

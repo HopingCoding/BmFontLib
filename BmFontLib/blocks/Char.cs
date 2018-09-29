@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+// ReSharper disable InconsistentNaming
 
-namespace BmFontLib
+namespace BmFontLib.blocks
 {
     public struct Char
     {
@@ -17,8 +17,7 @@ namespace BmFontLib
         public byte page;
         public byte chnl;
 
-
-        public Dictionary<uint, short> kernings;
+        public IDictionary<uint, short> kernings;
 
         public Char(byte[] values, int offset)
         {
